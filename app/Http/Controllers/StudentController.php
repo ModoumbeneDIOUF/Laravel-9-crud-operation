@@ -16,10 +16,23 @@ class StudentController extends Controller
     }
 
     public function store(Request $request)
+
     {
-        $input = $request->all();
-        Student::create($input);
-        return redirect('student')->with('flash_message', 'Student Addedd!');
+
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'address' => 'required',
+            'mobile' => 'required|unique:students|min:5'
+        ], [
+            'name.required' => 'Name field is required.',
+            'address.required' => 'Password field is required.',
+            'mobile.required' => 'Mobile field is required.',
+        ]);
+       // $validatedData['password'] = bcrypt($validatedData['password']);
+
+       // $input = $request->all();
+         Student::create($validatedData);
+        return redirect('student')->with('success', 'Student Addedd!');
     }
 
     public function show($id)
@@ -36,15 +49,28 @@ class StudentController extends Controller
 
     public function update(Request $request, $id)
     {
+
+
         $student = Student::find($id);
-        $input = $request->all();
-        $student->update($input);
-        return redirect('student')->with('flash_message', 'student Updated!');
+
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'address' => 'required',
+            'mobile' => 'required|min:5'
+        ], [
+            'name.required' => 'Name field is required.',
+            'address.required' => 'Password field is required.',
+            'mobile.required' => 'Mobile field is required.',
+        ]);
+
+        //$input = $request->all();
+        $student->update($validatedData);
+        return redirect('student')->with('success', 'student Updated!');
     }
 
     public function destroy($id)
     {
         Student::destroy($id);
-        return redirect('student')->with('flash_message', 'Student deleted!');
+        return redirect('student')->with('success', 'Student deleted!');
     }
 }
